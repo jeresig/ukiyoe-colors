@@ -1,36 +1,65 @@
 var cp = require("child_process");
+var fs = require("fs");
+var path = require("path");
+var util = require("util");
 
+var async = require("async");
 var Color = require("color");
+var JSONStream = require("JSONStream");
 
+var dir = process.argv[2];
 var minPercent = 0.01;
+var processes = 2;
 
-cp.exec("convert test.jpg -colors 50 -format %c histogram:info:-", function(err, stdout) {
-    var total = 0;
-    var matches = [];
+var cmd = "convert %s -colors 50 -format %c histogram:info:-";
 
-    stdout.split("\n").forEach(function(line) {
-        if (!/^\s*(\d+): \(\s*(\d+),\s*(\d+),\s*(\d+)\)/.test(line)) {
-            return;
-        }
+var files = fs.readdirSync(dir);
+var stream = JSONStream.stringifyObject();
 
-        var count = parseFloat(RegExp.$1);
-        var r = RegExp.$2;
-        var g = RegExp.$3;
-        var b = RegExp.$4;
+stream.pipe(process.stdout);
 
-        total += count;
+async.eachLimit(files, processes, function(file, callback) {
+    var filePath = path.join(dir, file);
+    cp.exec(util.format(cmd, filePath), function(err, stdout) {
+        var total = 0;
+        var matches = [];
 
-        matches.push({
-            count: count,
-            hsl: Color().rgb([r, g, b]).hslArray()
+        stdout.split("\n").forEach(function(line) {
+            if (!/^\s*(\d+): \(\s*(\d+),\s*(\d+),\s*(\d+)\)/.test(line)) {
+                return;
+            }
+
+            var count = parseFloat(RegExp.$1);
+            var r = RegExp.$2;
+            var g = RegExp.$3;
+            var b = RegExp.$4;
+
+            total += count;
+
+            matches.push({
+                count: count,
+                hsl: Color().rgb([r, g, b]).hslArray()
+            });
         });
-    });
 
-    matches.forEach(function(match) {
-        match.percent = match.count / total;
+        matches = matches.map(function(match) {
+            var percent = parseFloat((match.count / total).toFixed(3));
 
-        if (match.percent >= minPercent) {
-            console.log(match.percent, match.hsl);
-        }
+            if (percent >= minPercent) {
+                return {
+                    hsl: match.hsl,
+                    match: percent
+                };
+            }
+        }).filter(function(match) {
+            return !!match;
+        });
+
+        stream.write([filePath, matches]);
+
+        callback();
     });
+}, function() {
+    stream.end();
 });
+
