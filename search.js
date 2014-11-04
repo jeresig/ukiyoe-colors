@@ -1,15 +1,15 @@
 
 console.log("Loading in JSON data...");
 
-var items = require("./bm-colors.json");
+var items = require("./bm-colors2.json");
 
-var color = [1,78,54];
-var hMin = color[0] - 5;
-var hMax = color[0] + 5;
-var sMin = color[1] - 5;
-var sMax = color[1] + 5;
-var lMin = color[2] - 5;
-var lMax = color[2] + 5;
+var color = [15,67,43];
+var hMin = color[0] - 10;
+var hMax = color[0] + 10;
+var sMin = color[1] - 10;
+var sMax = color[1] + 10;
+var lMin = color[2] - 10;
+var lMax = color[2] + 10;
 
 var matches = {};
 
