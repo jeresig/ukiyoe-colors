@@ -6,10 +6,10 @@ var items = require("./bm-colors2.json");
 var color = [15,67,43];
 var hMin = color[0] - 10;
 var hMax = color[0] + 10;
-var sMin = color[1] - 10;
-var sMax = color[1] + 10;
-var lMin = color[2] - 10;
-var lMax = color[2] + 10;
+var sMin = 50;
+var sMax = 100;
+var lMin = 20;
+var lMax = 80;
 
 var matches = {};
 
@@ -22,7 +22,7 @@ for (var file in items) {
         var curH = curColor[0];
         var curS = curColor[1];
         var curL = curColor[2];
-        if (curH >= hMin && curH <= hMax &&
+        if ((curH >= 355 || curH <= 10) &&
             curS >= sMin && curS <= sMax &&
             curL >= lMin && curL <= lMax) {
                 score += colors[i].match;
