@@ -37,5 +37,5 @@ for (var file in items) {
 Object.keys(matches).sort(function(a, b) {
     return matches[a] - matches[b];
 }).forEach(function(file) {
-    console.log(matches[file], file);
+    console.log(matches[file] + "\t" + file);
 });
