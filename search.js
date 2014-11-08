@@ -1,6 +1,3 @@
-
-console.log("Loading in JSON data...");
-
 var items = require("./bm-colors2.json");
 
 var color = [15,67,43];
@@ -37,5 +34,7 @@ for (var file in items) {
 Object.keys(matches).sort(function(a, b) {
     return matches[a] - matches[b];
 }).forEach(function(file) {
-    console.log(matches[file] + "\t" + file);
+    var parts = file.split("/");
+    console.log([parts[0], matches[file],
+        parts[2].replace(".jpg", "")].join("\t"));
 });
